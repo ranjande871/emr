@@ -29,6 +29,7 @@ security_group_ids = []
 
 tags = {
   Environment = "dev"
-  Owner       = "platform"
   ManagedBy   = "terraform"
+  Owner       = "platform"
+  Project     = "emr-serverless"
 }
