@@ -1,11 +1,12 @@
-aws_region = "ap-south-1"
+aws_region = "us-east-1"
 
 name          = "dev-emr-serverless"
 release_label = "emr-6.15.0"
 type          = "SPARK"
 
-s3_bucket = "my-emr-serverless-bucket"
+s3_bucket = "emr-serverless-209578578071-us-east-1-dev"
 s3_prefix = "emr/dev"
+
 
 enable_cloudwatch_logs = true
 log_retention_days     = 14
