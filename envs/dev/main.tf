@@ -34,5 +34,5 @@ output "emr_serverless_application_arn" {
 
 # Just for visibility in outputs (not used by app):
 output "job_s3_location" {
-  value = "s3://${var.job_s3_bucket_name}/${trim(var.job_s3_prefix, \"/\")}/"
+  value = "s3://${var.job_s3_bucket_name}/${trim(var.job_s3_prefix, "/")}/"
 }
