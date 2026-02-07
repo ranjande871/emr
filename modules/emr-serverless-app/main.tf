@@ -36,14 +36,10 @@ resource "aws_emrserverless_application" "this" {
     memory = var.max_memory
   }
 
-  dynamic "monitoring_configuration" {
-    for_each = var.enable_cloudwatch_logs ? [1] : []
-    content {
-      cloud_watch_monitoring_configuration {
-        log_group_name = aws_cloudwatch_log_group.this[0].name
-      }
-    }
-  }
+  # NOTE:
+  # Your current AWS provider schema does NOT support application-level
+  # monitoring_configuration { cloud_watch_monitoring_configuration { ... } }.
+  # We'll configure CloudWatch logging at the JOB RUN level later (or upgrade provider).
 
   dynamic "network_configuration" {
     for_each = var.enable_vpc ? [1] : []
