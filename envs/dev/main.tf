@@ -1,36 +1,53 @@
-resource "aws_cloudwatch_log_group" "this" {
-  count             = var.enable_cloudwatch_logs ? 1 : 0
-  name              = "/aws/emr-serverless/${var.name}"
-  retention_in_days = var.log_retention_days
+module "network" {
+  source               = "../../modules/network"
+  name                 = var.name_prefix
+  vpc_cidr             = var.vpc_cidr
+  azs                  = var.azs
+  private_subnet_cidrs = var.private_subnet_cidrs
+  tags                 = var.tags
 }
 
-resource "aws_emrserverless_application" "this" {
-  name          = var.name
-  release_label = var.release_label
-  type          = var.type
+module "artifacts_s3" {
+  source      = "../../modules/emr-serverless-s3"
+  bucket_name = "${var.name_prefix}-artifacts-${var.account_id}"
+  tags        = var.tags
+}
 
-  # NOTE:
-  # Removing initial_capacity avoids consuming concurrent vCPU quota during
-  # application creation. Capacity will be allocated when jobs are submitted.
-  # If you later increase quota, you can re-add initial_capacity.
+module "logs_s3" {
+  source      = "../../modules/emr-serverless-s3"
+  bucket_name = "${var.name_prefix}-logs-${var.account_id}"
+  tags        = var.tags
+}
 
-  maximum_capacity {
-    cpu    = var.max_cpu
-    memory = var.max_memory
-  }
+module "iam" {
+  source              = "../../modules/emr-serverless-iam"
+  role_name           = "${var.name_prefix}-execution-role"
+  artifact_bucket_arn = "arn:aws:s3:::${module.artifacts_s3.bucket_name}"
+  log_bucket_arn      = "arn:aws:s3:::${module.logs_s3.bucket_name}"
+  tags                = var.tags
+}
 
-  # NOTE:
-  # Your current AWS provider schema does NOT support application-level
-  # monitoring_configuration { cloud_watch_monitoring_configuration { ... } }.
-  # We'll configure CloudWatch logging at the JOB RUN level later (or upgrade provider).
+module "emr_serverless" {
+  source           = "../../modules/emr-serverless-app"
+  application_name = "${var.name_prefix}-app"
+  release_label    = var.release_label
+  application_type = var.application_type
 
-  dynamic "network_configuration" {
-    for_each = var.enable_vpc ? [1] : []
-    content {
-      subnet_ids         = var.subnet_ids
-      security_group_ids = var.security_group_ids
-    }
-  }
+  # Keep conservative (quota)
+  max_cpu    = var.max_cpu
+  max_memory = var.max_memory
+
+  enable_vpc         = true
+  subnet_ids         = module.network.private_subnet_ids
+  security_group_ids = [module.network.security_group_id]
 
   tags = var.tags
+}
+
+output "emr_serverless_application_id" {
+  value = module.emr_serverless.application_id
+}
+
+output "emr_serverless_execution_role_arn" {
+  value = module.iam.execution_role_arn
 }

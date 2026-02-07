@@ -1,35 +1,21 @@
-aws_region = "us-east-1"
+aws_region  = "us-east-1"
+account_id  = "209578578071"
+name_prefix = "dev-emr-serverless"
 
-name          = "dev-emr-serverless"
-release_label = "emr-6.15.0"
-type          = "SPARK"
+vpc_cidr             = "10.20.0.0/16"
+azs                  = ["us-east-1a", "us-east-1b"]
+private_subnet_cidrs = ["10.20.1.0/24", "10.20.2.0/24"]
 
-s3_bucket = "emr-serverless-209578578071-us-east-1-dev"
-s3_prefix = "emr/dev"
+release_label    = "emr-6.15.0"
+application_type = "spark"
 
-
-enable_cloudwatch_logs = true
-log_retention_days     = 14
-
-driver_worker_count   = 1
-executor_worker_count = 2
-
-driver_cpu    = "2 vCPU"
-driver_memory = "4 GB"
-
-executor_cpu    = "2 vCPU"
-executor_memory = "4 GB"
-
-max_cpu    = "2 vCPU"
-max_memory = "4 GB"
-
-enable_vpc         = false
-subnet_ids         = []
-security_group_ids = []
+# Keep small to avoid quota issues
+max_cpu    = "4 vCPU"
+max_memory = "16 GB"
 
 tags = {
   Environment = "dev"
+  Project     = "emr-serverless"
   ManagedBy   = "terraform"
   Owner       = "platform"
-  Project     = "emr-serverless"
 }
