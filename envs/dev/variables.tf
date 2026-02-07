@@ -1,45 +1,43 @@
-variable "aws_region" {
+variable "aws_region" { type = string }
+
+variable "application_name" { type = string }
+variable "release_label"    { type = string }
+variable "application_type" { type = string }
+
+variable "max_cpu"    { type = string }
+variable "max_memory" { type = string }
+
+# Existing VPC details (no creation)
+variable "existing_vpc_id" {
   type        = string
-  description = "AWS region"
+  description = "For reference/clarity (EMR uses subnet IDs)."
 }
 
-variable "release_label" {
-  type        = string
-  description = "EMR release label, e.g. emr-6.15.0"
-}
-
-variable "application_type" {
-  type        = string
-  description = "Application type: spark or hive"
-  validation {
-    condition     = contains(["spark", "hive"], var.application_type)
-    error_message = "application_type must be one of: spark, hive"
-  }
-}
-
-variable "max_cpu" {
-  type        = string
-  description = "Max CPU, e.g. '4 vCPU'"
-}
-
-variable "max_memory" {
-  type        = string
-  description = "Max memory, e.g. '16 GB'"
-}
-
-# Existing network inputs (NO new VPC creation)
 variable "existing_subnet_ids" {
-  type        = list(string)
-  description = "Existing private subnet IDs for EMR Serverless"
+  type = list(string)
 }
 
 variable "existing_security_group_ids" {
-  type        = list(string)
-  description = "Existing security group IDs for EMR Serverless"
+  type = list(string)
 }
 
+# Monitoring inputs
+variable "enable_monitoring" { type = bool }
+variable "enable_cloudwatch_logs" { type = bool }
+variable "cloudwatch_log_group_name" { type = string }
+variable "cloudwatch_log_stream_prefix" { type = string }
+variable "s3_log_uri" { type = string }
+
+# Auto start/stop
+variable "enable_auto_start" { type = bool }
+variable "enable_auto_stop" { type = bool }
+variable "idle_timeout_minutes" { type = number }
+
+# Optional S3 references for your job standards (not used by app)
+variable "job_s3_bucket_name" { type = string }
+variable "job_s3_prefix"      { type = string }
+
 variable "tags" {
-  type        = map(string)
-  description = "Common tags"
-  default     = {}
+  type    = map(string)
+  default = {}
 }
