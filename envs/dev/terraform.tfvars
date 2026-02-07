@@ -20,8 +20,8 @@ driver_memory = "4 GB"
 executor_cpu    = "2 vCPU"
 executor_memory = "4 GB"
 
-max_cpu    = "16 vCPU"
-max_memory = "64 GB"
+max_cpu    = "2 vCPU"
+max_memory = "4 GB"
 
 enable_vpc         = false
 subnet_ids         = []
