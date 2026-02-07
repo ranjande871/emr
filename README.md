@@ -1,14 +1,15 @@
-# EMR Serverless Infrastructure (Terraform)
+# EMR Serverless IaC (Terraform)
 
-This repository provisions Amazon EMR Serverless applications using
-Terraform modules and Terraform Cloud.
+This repo provisions an Amazon EMR Serverless application using Terraform.
 
-Structure:
-- modules/ : reusable Terraform modules
-- envs/    : environment-specific stacks (dev, prod)
+## Structure
+- `modules/emr-serverless-app/` : reusable module
+- `envs/dev/` : dev stack (Terraform Cloud workspace: `emr-serverless-dev`)
+- `envs/prod/` : prod stack (Terraform Cloud workspace: `emr-serverless-prod`)
 
-Authentication:
-- Terraform Cloud with AWS OIDC (recommended)
+## Usage
+- Terraform Cloud (VCS-driven): connect the repo and set working directory to `envs/dev` or `envs/prod`.
 
-Managed by Terraform.
-
+## Notes
+- Do not commit Terraform state files.
+- Use AWS OIDC in Terraform Cloud for authentication (recommended).
